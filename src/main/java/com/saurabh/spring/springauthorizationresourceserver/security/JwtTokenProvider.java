@@ -27,19 +27,18 @@ public class JwtTokenProvider {
 		Date expiryDate = new Date(System.currentTimeMillis() + 60 * 60 * 1000);
 
 		return Jwts.builder()
-				.setSubject(userDetails.getUsername())
+				.setSubject(Long.toString(userDetails.getId()))
 				.setIssuedAt(new Date())
 				.setExpiration(expiryDate).signWith(SignatureAlgorithm.HS512, "JWTSuperSecretKey")
 				.compact();
 	}
 	
-	public String getUsernameFromToken(String token){
-		
+	public Long getUserIdFromToken(String token){
 		Claims claims = Jwts.parser()
 				.setSigningKey("JWTSuperSecretKey")
 				.parseClaimsJws(token)
 				.getBody();
-		return claims.getSubject();
+		return Long.parseLong(claims.getSubject());
 	}
 	
 	public boolean validateToken(String authToken){
@@ -59,6 +58,5 @@ public class JwtTokenProvider {
             logger.error("JWT claims string is empty.");
         }
         return false;
-		
 	}
 }
